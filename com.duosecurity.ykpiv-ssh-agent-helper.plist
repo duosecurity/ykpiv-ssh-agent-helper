@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.duosecurity.ykpiv-ssh-agent-helper</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/local/bin/ykpiv-ssh-agent-helper</string>
+		<string>--yubico-piv-tool-dir</string>
+		<string>/opt/yubico-piv-tool/</string>
+	</array>
+        <key>RunAtLoad</key>
+        <true />
+</dict>
+</plist>

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "Hi"
+
+exit 0
