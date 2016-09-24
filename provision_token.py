@@ -83,11 +83,13 @@ def main():
         default='/opt/yubico-piv-tool/bin/yubico-piv-tool',
         help=("Path to 'yubico-piv-tool' binary. "
               "(Default: '/opt/yubico-piv-tool/bin/yubico-piv-tool')")
+        )
     parser.add_argument(
         '--ykneomgr-path',
         default='/opt/libykneomgr/bin/ykneomgr',
         help=("Path to optional 'ykneomgr' binary. "
               "(Default: '/opt/libykneomgr/bin/ykneomgr'")
+        )
     parser.add_argument('--append-csv')
     parser.add_argument('--common-name')
     args = parser.parse_args()
@@ -108,9 +110,12 @@ def main():
     serial_number = 'UNKNOWN'
     if args.ykneomgr_path:
         print 'Reading serial number...'
-        status, output = get_status_and_output(
-            [args.ykneomgr_path, '-s'])
-        if status:
+        try:
+            status, output = get_status_and_output(
+                [args.ykneomgr_path, '-s'])
+            if status:
+                raise Exception()
+        except Exception:
             print 'Could not read serial number. Is ykneomgr installed?'
         else:
             serial_number = output.strip()
