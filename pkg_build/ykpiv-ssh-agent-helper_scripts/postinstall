@@ -1,5 +1,8 @@
 #!/bin/bash
 
-echo "Hi"
+# SECURITY FEATURE: the libs need to be in /usr/local/lib, as explained in https://github.com/OpenSC/OpenSC/issues/1008
+cp /opt/yubico-piv-tool/lib/libykpiv.1.dylib /usr/local/lib/
+cp /opt/yubico-piv-tool/lib/libykcs11.dylib /usr/local/lib/
+cp /opt/yubico-piv-tool/lib/libcrypto.1.0.0.dylib /usr/local/lib/
 
 exit 0

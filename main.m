@@ -378,8 +378,8 @@ void doWakeLoop(NSString *yubicoPivToolDir) {
     // XXX ideally, we should read this from the keychain every time we wake up
     // and then (attempt to?) scrub it from memory when we're done with it.
     
-    NSString *pkcs11Module = [yubicoPivToolDir stringByAppendingPathComponent:@"lib/libykcs11.dylib"];
     
+    NSString *pkcs11Module = @"/usr/local/lib/libykcs11.dylib";
     YKPIVSSHAgentHelper *helper = [[YKPIVSSHAgentHelper alloc] initWithPKCS11Path:pkcs11Module];
     
     // We assume this process will be started by launchd upon interactive login
