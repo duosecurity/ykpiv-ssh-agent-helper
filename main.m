@@ -44,7 +44,7 @@ void fail(NSString *fmt, ...) {
     va_start(ap, fmt);
     NSLogv(fmt, ap);
     va_end(ap);
-    
+
     NSLog(@"Fatal Error! Terminating.");
     exit(-1);
 }
@@ -75,7 +75,7 @@ NSData *getPin(SecKeychainItemRef *itemRefReturn) {
     OSStatus status;
     void *passwordBytes;
     uint32_t passwordLength;
-    
+
     status = SecKeychainFindGenericPassword(NULL,
                                             (uint32_t)[KEYCHAIN_SERVICE lengthOfBytesUsingEncoding:NSUTF8StringEncoding],
                                             [KEYCHAIN_SERVICE cStringUsingEncoding:NSUTF8StringEncoding],
@@ -99,7 +99,7 @@ NSData *getPin(SecKeychainItemRef *itemRefReturn) {
     } else {
         NSLog(@"Failed to retrieve existing PIN from keychain: %d", status);
     }
-    
+
     return nil;
 }
 
@@ -132,14 +132,14 @@ NSData *getPin(SecKeychainItemRef *itemRefReturn) {
         return;
     }
     self.state = STATE_REMOVING;
-    
+
     // dig SSH_AUTH_SOCK out of environment
     const char *auth_socket_path = getenv("SSH_AUTH_SOCK");
     if (!auth_socket_path) {
         fail(@"No SSH_AUTH_SOCK in environment!");
         return;
     }
-    
+
     // create sockaddr_un struct
     struct sockaddr_un auth_socket_address;
     auth_socket_address.sun_family = AF_UNIX;
@@ -150,7 +150,7 @@ NSData *getPin(SecKeychainItemRef *itemRefReturn) {
         fail(@"SSH_AUTH_SOCK too long: '%s'", auth_socket_path);
         return;
     }
-    
+
     CFSocketNativeHandle s = socket(PF_UNIX, SOCK_STREAM, 0);
     if (s < 0) {
         fail(@"socket() failed! errno %d", errno);
@@ -161,15 +161,15 @@ NSData *getPin(SecKeychainItemRef *itemRefReturn) {
         fail(@"connect() failed! errno %d", errno);
         return;
     }
-    
+
     // create streams
     CFReadStreamRef readStreamCF = nil;
     CFWriteStreamRef writeStreamCF = nil;
     CFStreamCreatePairWithSocket(NULL, s, &readStreamCF, &writeStreamCF);
-    
+
     self.inputStream = (__bridge_transfer NSInputStream *)readStreamCF;
     self.outputStream = (__bridge_transfer NSOutputStream *)writeStreamCF;
-    
+
     [self.inputStream setDelegate:self];
     [self.outputStream setDelegate:self];
     [self.inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
@@ -184,7 +184,7 @@ NSData *getPin(SecKeychainItemRef *itemRefReturn) {
     uint32_t responseLength;
     uint8_t response;
     uint8_t messageType;
-    
+
     switch (eventCode) {
         case NSStreamEventHasSpaceAvailable:
             if (self.state == STATE_REMOVING) {
@@ -237,11 +237,11 @@ NSData *getPin(SecKeychainItemRef *itemRefReturn) {
 - (NSMutableData *)buildAgentSmartcardRequest:(uint8_t)messageType
 {
     NSMutableData *message = [NSMutableData data];
-    
+
     // add placeholder for length. we'll fill this in later!
     uint32_t messageLength = 0;
     [message appendBytes:&messageLength length:sizeof(messageLength)];
-    
+
     // add message type
     [message appendBytes:&messageType length:sizeof(messageType)];
 
@@ -260,11 +260,11 @@ NSData *getPin(SecKeychainItemRef *itemRefReturn) {
     uint32_t pinLength = htonl([pinBytes length]);
     [message appendBytes:&pinLength length:sizeof(pinLength)];
     [message appendData:pinBytes];
-    
+
     // write the actual length into the first four bytes of "message"
     messageLength = htonl([message length] - sizeof(messageLength));
     memcpy([message mutableBytes], &messageLength, sizeof(messageLength));
-    
+
     return message;
 }
 @end
@@ -275,7 +275,7 @@ void doReloadService(NSString *launchAgentPlist) {
     NSFileHandle *nullFile = [NSFileHandle fileHandleForWritingAtPath:@"/dev/null"];
     if ([launchAgentPlist length]) {
         printf("Restarting ykpiv-ssh-agent-helper LaunchAgent\n");
-        
+
         // for stopping the agent process, squelch the output, because we don't
         // particularly care about the results of this operation
         task = [[NSTask alloc] init];
@@ -285,7 +285,7 @@ void doReloadService(NSString *launchAgentPlist) {
         task.standardError = nullFile;
         [task launch];
         [task waitUntilExit];
-        
+
         task = [NSTask launchedTaskWithLaunchPath:@"/bin/launchctl"
                                         arguments:@[@"load", launchAgentPlist]];
         [task waitUntilExit];
@@ -295,7 +295,7 @@ void doReloadService(NSString *launchAgentPlist) {
 void doResetPin(NSString *launchAgentPlist, NSString *yubicoPivToolDir) {
     NSString *oldPin = [NSString stringWithUTF8String:getpass("Enter your current PIN: ")];
     NSString *newPin = generateNewPin(8);
-    
+
     NSString *yubicoPivToolPath = [yubicoPivToolDir stringByAppendingPathComponent:@"bin/yubico-piv-tool"];
     NSTask *task = [NSTask launchedTaskWithLaunchPath:yubicoPivToolPath
                                             arguments:@[@"-a", @"change-pin", @"--pin",
@@ -310,14 +310,14 @@ void doResetPin(NSString *launchAgentPlist, NSString *yubicoPivToolDir) {
         // the latter would store this in system logs
         printf("Changed YubiKey PIV PIN to %s\n", [newPin UTF8String]);
     }
-    
+
     SecKeychainItemRef oldItemRef;
     NSData *oldKeychainPin = getPin(&oldItemRef);
     if (oldKeychainPin) {
         SecKeychainItemDelete(oldItemRef);
         CFRelease(oldItemRef);
     }
-    
+
     OSStatus status = SecKeychainAddGenericPassword(NULL,
                                                     (uint32_t)[KEYCHAIN_SERVICE lengthOfBytesUsingEncoding:NSUTF8StringEncoding],
                                                     [KEYCHAIN_SERVICE cStringUsingEncoding:NSUTF8StringEncoding],
@@ -344,7 +344,7 @@ static void match_set(CFMutableDictionaryRef dict, CFStringRef key, int value) {
     CFRelease(number);
 }
 
-static CFDictionaryRef matching_dictionary_create(int vendorID, int usagePage, int usage) {
+static CFDictionaryRef matching_dictionary_create(int vendorID) {
     CFMutableDictionaryRef match =
         CFDictionaryCreateMutable(kCFAllocatorDefault,
                                   0,
@@ -353,12 +353,6 @@ static CFDictionaryRef matching_dictionary_create(int vendorID, int usagePage, i
 
     if (vendorID) {
         match_set(match, CFSTR(kIOHIDVendorIDKey), vendorID);
-    }
-    if (usagePage) {
-        match_set(match, CFSTR(kIOHIDDeviceUsagePageKey), usagePage);
-    }
-    if (usage) {
-        match_set(match, CFSTR(kIOHIDDeviceUsageKey), usage);
     }
 
     return match;
@@ -377,15 +371,15 @@ static void match_callback(void *context, IOReturn result, void *sender,
 void doWakeLoop(NSString *yubicoPivToolDir) {
     // XXX ideally, we should read this from the keychain every time we wake up
     // and then (attempt to?) scrub it from memory when we're done with it.
-    
-    
+
+
     NSString *pkcs11Module = @"/usr/local/lib/libykcs11.dylib";
     YKPIVSSHAgentHelper *helper = [[YKPIVSSHAgentHelper alloc] initWithPKCS11Path:pkcs11Module];
-    
+
     // We assume this process will be started by launchd upon interactive login
     // so add the pkcs#11 module to ssh-agent immediately on launch
     [helper refreshPkcs11Module:nil];
-    
+
     // Then, register for wake notifications.
     NSNotificationCenter *workspaceNotificationCenter = [[NSWorkspace sharedWorkspace] notificationCenter];
     [workspaceNotificationCenter addObserverForName:NSWorkspaceDidWakeNotification
@@ -400,14 +394,13 @@ void doWakeLoop(NSString *yubicoPivToolDir) {
                                                           afterDelay:6];
                                          }];
 
-
     // register for Device Plug / Unplug events; code roughly taken from https://github.com/pallotron/yubiswitch/blob/master/yubiswitch.helper/main.c
     IOHIDManagerRef hidManager = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
 
     IOHIDManagerRegisterDeviceMatchingCallback(hidManager, match_callback, (__bridge void *)helper);
     IOHIDManagerScheduleWithRunLoop(hidManager, CFRunLoopGetMain(), kCFRunLoopCommonModes);
 
-    CFDictionaryRef match = matching_dictionary_create((int)idVendor, 1, 6);
+    CFDictionaryRef match = matching_dictionary_create((int)idVendor);
     IOHIDManagerSetDeviceMatching(hidManager, match);
     CFRelease(match);
 
