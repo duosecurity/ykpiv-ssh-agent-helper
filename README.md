@@ -1,3 +1,15 @@
+# ykpiv-ssh-agent-helper FORKED with support for detecting attach of yubikeys
+
+I patched the helper with two functionalities:
+
+- when the yubikey is removed and attached again, re-run the initialization; ensuring SSH etc then works properly :)
+- make compatible with OSX 10.13 (move dylibs into /usr/local/lib)
+
+
+(original Readme follows below)
+
+--- 
+
 # ykpiv-ssh-agent-helper
 
 This is a dumb little utility to streamline the use of ssh-agent with
