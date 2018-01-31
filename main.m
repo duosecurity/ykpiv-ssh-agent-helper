@@ -18,6 +18,7 @@
 #import <unistd.h>
 #import <getopt.h>
 #import <stdio.h>
+#include <IOKit/hid/IOHIDManager.h>
 
 // ssh-agent protocol constants
 const int SSH_AGENTC_ADD_SMARTCARD_KEY = 20;
@@ -218,7 +219,8 @@ NSData *getPin(SecKeychainItemRef *itemRefReturn) {
                 self.outputStream = nil;
                 self.state = STATE_IDLE;
             } else {
-                fail(@"ssh_agent reported failure adding PKCS#11 module");
+                NSLog(@"ssh_agent reported failure adding PKCS#11 module. Maybe the Yubikey is currently not plugged in?");
+                self.state = STATE_IDLE;
             }
             break;
         case NSStreamEventErrorOccurred:
@@ -333,6 +335,45 @@ void doResetPin(NSString *launchAgentPlist, NSString *yubicoPivToolDir) {
     }
 }
 
+// Yubico
+#define     idVendor           0x1050
+
+static void match_set(CFMutableDictionaryRef dict, CFStringRef key, int value) {
+    CFNumberRef number = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &value);
+    CFDictionarySetValue(dict, key, number);
+    CFRelease(number);
+}
+
+static CFDictionaryRef matching_dictionary_create(int vendorID, int usagePage, int usage) {
+    CFMutableDictionaryRef match =
+        CFDictionaryCreateMutable(kCFAllocatorDefault,
+                                  0,
+                                  &kCFTypeDictionaryKeyCallBacks,
+                                  &kCFTypeDictionaryValueCallBacks);
+
+    if (vendorID) {
+        match_set(match, CFSTR(kIOHIDVendorIDKey), vendorID);
+    }
+    if (usagePage) {
+        match_set(match, CFSTR(kIOHIDDeviceUsagePageKey), usagePage);
+    }
+    if (usage) {
+        match_set(match, CFSTR(kIOHIDDeviceUsageKey), usage);
+    }
+
+    return match;
+}
+
+
+static void match_callback(void *context, IOReturn result, void *sender,
+                           IOHIDDeviceRef device) {
+    NSLog(@"Matching USB device appeared");
+    YKPIVSSHAgentHelper *helper = (__bridge YKPIVSSHAgentHelper*)context;
+    [helper performSelector:@selector(refreshPkcs11Module:)
+                                                          withObject:nil
+                                                          afterDelay:1];
+}
+
 void doWakeLoop(NSString *yubicoPivToolDir) {
     // XXX ideally, we should read this from the keychain every time we wake up
     // and then (attempt to?) scrub it from memory when we're done with it.
@@ -358,6 +399,18 @@ void doWakeLoop(NSString *yubicoPivToolDir) {
                                                           withObject:nil
                                                           afterDelay:6];
                                          }];
+
+
+    // register for Device Plug / Unplug events; code roughly taken from https://github.com/pallotron/yubiswitch/blob/master/yubiswitch.helper/main.c
+    IOHIDManagerRef hidManager = IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone);
+
+    IOHIDManagerRegisterDeviceMatchingCallback(hidManager, match_callback, (__bridge void *)helper);
+    IOHIDManagerScheduleWithRunLoop(hidManager, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+
+    CFDictionaryRef match = matching_dictionary_create((int)idVendor, 1, 6);
+    IOHIDManagerSetDeviceMatching(hidManager, match);
+    CFRelease(match);
+
     // loop forever!
     [[NSRunLoop mainRunLoop] run];
 }

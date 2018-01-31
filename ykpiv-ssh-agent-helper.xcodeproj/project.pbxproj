@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9E73EC2D2021D3F90036E207 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E73EC2C2021D3F90036E207 /* IOKit.framework */; };
 		B8012F331C7E1AB9007EAE88 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8012F321C7E1AB9007EAE88 /* AppKit.framework */; };
 		B8012F351C7EADE9007EAE88 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B8012F341C7EADE9007EAE88 /* Security.framework */; };
 		B85C443F1D95B60600015B29 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B85C443E1D95B60600015B29 /* main.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9E73EC2C2021D3F90036E207 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		B8012F281C7E1A2B007EAE88 /* ykpiv-ssh-agent-helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "ykpiv-ssh-agent-helper"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8012F321C7E1AB9007EAE88 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		B8012F341C7EADE9007EAE88 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -25,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9E73EC2D2021D3F90036E207 /* IOKit.framework in Frameworks */,
 				B8012F351C7EADE9007EAE88 /* Security.framework in Frameworks */,
 				B8012F331C7E1AB9007EAE88 /* AppKit.framework in Frameworks */,
 			);
@@ -33,6 +36,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9E73EC2B2021D3F90036E207 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9E73EC2C2021D3F90036E207 /* IOKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B8012F1F1C7E1A2B007EAE88 = {
 			isa = PBXGroup;
 			children = (
@@ -41,6 +52,7 @@
 				B8012F341C7EADE9007EAE88 /* Security.framework */,
 				B8012F321C7E1AB9007EAE88 /* AppKit.framework */,
 				B8012F291C7E1A2B007EAE88 /* Products */,
+				9E73EC2B2021D3F90036E207 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
