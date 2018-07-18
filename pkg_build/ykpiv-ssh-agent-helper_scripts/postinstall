@@ -5,4 +5,6 @@ cp /opt/yubico-piv-tool/lib/libykpiv.1.dylib /usr/local/lib/
 cp /opt/yubico-piv-tool/lib/libykcs11.dylib /usr/local/lib/
 cp /opt/yubico-piv-tool/lib/libcrypto.1.0.0.dylib /usr/local/lib/
 
+# install OpenSC
+installer -pkg /tmp/OpenSC\ 0.18.0.pkg -target /
 exit 0

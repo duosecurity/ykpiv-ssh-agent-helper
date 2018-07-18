@@ -373,7 +373,7 @@ void doWakeLoop(NSString *yubicoPivToolDir) {
     // and then (attempt to?) scrub it from memory when we're done with it.
 
 
-    NSString *pkcs11Module = @"/usr/local/lib/libykcs11.dylib";
+    NSString *pkcs11Module = @"/usr/local/lib/opensc-pkcs11.so";
     YKPIVSSHAgentHelper *helper = [[YKPIVSSHAgentHelper alloc] initWithPKCS11Path:pkcs11Module];
 
     // We assume this process will be started by launchd upon interactive login

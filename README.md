@@ -8,7 +8,7 @@ I patched the helper with two functionalities:
 
 (original Readme follows below)
 
---- 
+---
 
 # ykpiv-ssh-agent-helper
 
@@ -28,9 +28,14 @@ In particularly, this tool is designed to solve two problems:
 
 # Build / Install
 
-Grab the latest yubico-piv-tool-x.x.x-mac.zip distribution from
+1. Grab the latest yubico-piv-tool-x.x.x-mac.zip distribution from
 https://developers.yubico.com/yubico-piv-tool/Releases/, and place it
-in the same directory containing this README.md. Then, run:
+in the same directory containing this README.md.
+
+2. Download OpenSC-0.18.0.dmg from https://github.com/OpenSC/OpenSC/releases, and
+place the "OpenSC 0.18.0.pkg" file in the same directory containing this README.md
+
+3. Then, run:
 
     ./pkg_build.sh
 
