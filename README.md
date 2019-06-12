@@ -8,9 +8,51 @@ I patched the helper with the following functionalities:
 
 (original Readme follows below)
 
+Our public (german) [security concept](https://sandstorm.de/de/datenschutz-und-datensicherheit/sicherheitskonzept.html) contains a detailed step-by-step instruction how to use the
+
+# Trouble–Shooting
+
+## missing key after YubiKey connect
+
+After connecting the YubiKey to a USB port `ssh-add -L` does not show it.
+
+1. reload the helper with `ykpiv-ssh-agent-helper --reload`
+1. validate that the process is running with `ps aux | grep -i ykpiv-ssh-agent-helper`
+1. check the YubiKey PIN store in the OS X keychain at _ykpiv-ssh-agent-helper_
+    * if not then reset the PIN `ykpiv-ssh-agent-helper --reset-pin`
+    * … and test again
+1. otherwise try also resetting the PIN to ensure that
+    * the stored PIN is correct
+    * the YubiKey is not already locked due to too many PIN retries
+
+## agent refused operation
+
+This can have many reasons. Here is the most common.
+
+### libs not on ssh-agent whitelist
+
+Verify that the following files are regular files and no symlinks:
+
+- _/usr/local/lib/libykpiv.1.dylib_
+- _/usr/local/lib/libykcs11.dylib_
+- _/usr/local/lib/libcrypto.1.0.0.dylib_
+
+In case of links, remove the links and copy the file from _/opt/yubico-piv-tool/lib/_.
+
+## enable ssh-agent logs
+
+```sh
+# start ssh-agent in debugging mode
+killall -KILL ssh-agent
+ssh-agent -d
+# export SSH_AUTH_SOCK in another terminal
+# retry e.g. ssh-add
+# read log from first console
+```
+
 ---
 
-# ykpiv-ssh-agent-helper
+# (original README) ykpiv-ssh-agent-helper
 
 This is a dumb little utility to streamline the use of ssh-agent with
 PIV-enabled YubiKeys on OS X. While is specifically intended for use
