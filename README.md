@@ -1,10 +1,10 @@
 # ykpiv-ssh-agent-helper FORKED with support for detecting attach of yubikeys
 
-I patched the helper with two functionalities:
+I patched the helper with the following functionalities:
 
 - when the yubikey is removed and attached again, re-run the initialization; ensuring SSH etc then works properly :)
 - make compatible with OSX 10.13 (move dylibs into /usr/local/lib)
-
+- install OpenSC alongside and use it internally (as it is the more robust PKCS11 library)
 
 (original Readme follows below)
 
