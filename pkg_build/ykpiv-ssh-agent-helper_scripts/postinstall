@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# we try to remove the symlinks if they might exist - if we do NOT do this, it seems to happen (on modern macs ;) )
+# that the file is placed on the TARGET of the symlink; and not the symlink itself is overridden by the file (which is
+# what we need to ensure the whitelist works properly)
+rm -f /usr/local/lib/libykpiv.1.dylib /usr/local/lib/libykcs11.dylib /usr/local/lib/libcrypto.1.0.0.dylib
+
+
 # SECURITY FEATURE: the libs need to be in /usr/local/lib, as explained in https://github.com/OpenSC/OpenSC/issues/1008
 cp /opt/yubico-piv-tool/lib/libykpiv.1.dylib /usr/local/lib/
 cp /opt/yubico-piv-tool/lib/libykcs11.dylib /usr/local/lib/
