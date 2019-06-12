@@ -16,11 +16,11 @@ Our public (german) [security concept](https://sandstorm.de/de/datenschutz-und-d
 After connecting the YubiKey to a USB port `ssh-add -L` does not show it.
 
 1. reload the helper with `ykpiv-ssh-agent-helper --reload`
-1. vaidate that the process is running with `ps aux | grep -i ykpiv-ssh-agent-helper`
+1. validate that the process is running with `ps aux | grep -i ykpiv-ssh-agent-helper`
 1. check the YubiKey PIN store in the OS X keychain at _ykpiv-ssh-agent-helper_
-    * if not reset the PIN `ykpiv-ssh-agent-helper --reset-pin`
-    * an test again
-1. else try also resetting the PIN to ensure that
+    * if not then reset the PIN `ykpiv-ssh-agent-helper --reset-pin`
+    * … and test again
+1. otherwise try also resetting the PIN to ensure that
     * the stored PIN is correct
     * the YubiKey is not already locked due to too many PIN retries
 
