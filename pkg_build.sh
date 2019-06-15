@@ -42,6 +42,9 @@ if [[ -e "$XCODE_PROJECT" ]]; then
     [ $? -eq 0 ] || { printf "\nxcodebuild failed! Exiting now."; exit 1; }
     mv "$RUN_DIRECTORY/build/$TARGET_NAME" "${TMP_PATH}/$INSTALL_PREFIX/"
 
+    mkdir "${TMP_PATH}/tmp/"
+    cp OpenSC\ 0.18.0.pkg "${TMP_PATH}/tmp/"
+
     # unzip yubico-piv-tool-(version)-mac.zip
     mkdir -p "${TMP_PATH}/opt/$PIVTOOL_DIRNAME"
     unzip "$PIVTOOL_ZIPPATH" -d "${TMP_PATH}/opt/$PIVTOOL_DIRNAME"
