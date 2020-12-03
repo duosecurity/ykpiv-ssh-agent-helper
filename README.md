@@ -1,3 +1,5 @@
+Note: this project is no longer being maintained. We recommend you check out https://github.com/FiloSottile/yubikey-agent instead!
+
 # ykpiv-ssh-agent-helper
 
 This is a dumb little utility to streamline the use of ssh-agent with
